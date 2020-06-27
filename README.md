@@ -2,11 +2,21 @@
 オリジナルのnginxイメージを作成し、ローカルのk8sクラスタにて起動し、外部からアクセスできるようにする手順。
 個人的なチュートリアル。
 
+## 前提
+dockerがインストール済
+minikubeがインストール済
+kubectrlがインストール済
+docker hubにアカウントがあること
+
+## minikube起動
+minikube start
+
 ## オリジナルのnginxイメージ作成
 ### HTML作成
 
 mkdir html
 touch html/index.html
+vi html/index.html
 
 ```html
 <!DOCTYPE html>
@@ -33,7 +43,7 @@ COPY ./html /usr/share/nginx/html
 docker build --tag miyazi777/test-nginx .
 
 ### コンテナを起動してテスト
-docker run --rm --name ts-nginx -p 80:80 test-nginx
+docker run --rm --name ts-nginx -p 80:80 miyazi777/test-nginx
 
 ### docker hubに登録
 docker push miyazi777/test-nginx
@@ -66,11 +76,15 @@ spec:
 ```
 
 #### デプロイ
+
 kubectl apply -f nginx-deployment.yaml
+
+kubectl get deployments
 
 ### サービス作成
 
 #### サービス用のマニフェスト作成
+
 touch nginx-service.yaml
 
 ```yaml
@@ -91,6 +105,8 @@ spec:
 
 #### サービスを適用
 kubectl apply -f nginx-service.yaml
+
+kubectl get service
 
 ## 動作確認
 ### ipアドレス確認
